@@ -5,46 +5,49 @@
       "name": "Sky"
     },
     {
-      "id": "2",
-      "name": "Moon"
-    },
-    {
       "id": "3",
       "name": "lol"
     },
     {
+      "id": "2",
+      "name": "aaa",
+      "salary": "111",
+      "department": "IT"
+    },
+    {
       "id": "4",
-      "name": "yesss"
+      "name": "aaa",
+      "salary": "aa",
+      "department": "IT"
     },
     {
       "id": "5",
-      "name": "aaaa"
+      "name": "aa",
+      "salary": "aa",
+      "department": "HR"
     },
     {
       "id": "6",
       "name": "aaa",
-      "salary": "200"
+      "salary": "200",
+      "department": "IT"
     },
     {
-      "id": 7,
-      "name": "ppp",
-      "salary": "89000"
+      "id": "7",
+      "name": "aa",
+      "salary": "200",
+      "department": "IT"
     },
     {
-      "id": 8,
-      "name": "aaa",
-      "salary": "8000"
+      "id": "8",
+      "name": "aaaaaa",
+      "salary": "300000",
+      "department": "AD"
     },
     {
-      "id": 9,
-      "name": "kwlkx",
-      "salary": "7000",
-      "department": "FC"
-    },
-    {
-      "id": 10,
-      "name": "aaa",
-      "salary": "2000",
+      "id": "9",
+      "name": "tyiot",
+      "salary": "3000",
       "department": "AD"
     }
   ]

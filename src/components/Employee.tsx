@@ -1,4 +1,7 @@
-import { useGetEmployeesQuery } from "../services/api";
+import {
+  useGetEmployeesQuery,
+  useDeleteEmployeesMutation,
+} from "../services/api";
 import { useEffect, useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Button from "@mui/material/Button";
@@ -16,6 +19,7 @@ import Container from "@mui/material/Container";
 import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
 export interface Employee {
   id: number;
@@ -26,23 +30,6 @@ export interface Employee {
 const defaultTheme = createTheme();
 
 export default function Employees(props: any) {
-  // const {
-  //   data: employees,
-  //   isLoading,
-  //   isFetching,
-  //   isError,
-  //   error,
-  // } = useGetEmployeesQuery();
-
-  // if (isLoading || isFetching) {
-  //   return <div>loading...</div>;
-  // }
-
-  // if (isError) {
-  //   console.log({ error });
-  //   return <div>{isError}</div>;
-  // }
-
   const [allEmployees, setAllEmployees] = useState([]);
 
   useEffect(() => {
@@ -56,6 +43,22 @@ export default function Employees(props: any) {
 
     fetchMyAPI();
   }, []);
+
+  // const [deleteEmployee] = useDeleteEmployeesMutation();
+  const deleteEmployee = async (params: number) => {
+    // console.log(params);
+    // await axios.delete("http://localhost:3000/employees", {
+    //   params: { id: params },
+    // });
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/employees/${params}`
+      );
+      console.log(response.data);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <ul>
@@ -84,8 +87,12 @@ export default function Employees(props: any) {
                   <Typography>{element.name}</Typography>
                 </CardContent>
                 <CardActions>
-                  <button>Edit</button>
-                  <Button size="small">Delete</Button>
+                  <button onClick={() => deleteEmployee(element.id)}>
+                    Edit
+                  </button>
+                  <button onClick={() => deleteEmployee(element.id)}>
+                    Delete
+                  </button>
                 </CardActions>
               </Card>
             </Grid>

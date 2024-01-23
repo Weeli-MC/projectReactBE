@@ -3,9 +3,6 @@ import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-import FormControlLabel from "@mui/material/FormControlLabel";
-import Checkbox from "@mui/material/Checkbox";
-import Link from "@mui/material/Link";
 import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
@@ -24,44 +21,17 @@ import {
   OutlinedInput,
   Select,
 } from "@mui/material";
+import axios from "axios";
 
 const defaultTheme = createTheme();
 
 export default function NewEmployee() {
-  const [createEmployees, { isLoading }] = useCreateEmployeesMutation();
-  const [input, setInput] = useState("");
+  const [createEmployees] = useCreateEmployeesMutation();
   const newLength = useGetEmployeesQuery().data?.length;
+  console.log(newLength, useGetEmployeesQuery());
   const [user, setUser] = useState({ username: "", salary: 0, department: "" });
 
-  // const onInputChange = (
-  //   event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
-  // ) => {
-  //   console.log("event here", event.target.value);
-  //   setInput(event.target.value);
-  // };
-
   const navigation = useNavigate();
-
-  // const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-  //   event.preventDefault();
-  //   const data = new FormData(event.currentTarget);
-  //   console.log({
-  //     salary: data.get("salary"),
-  //     department: data.get("department"),
-  //   });
-  //   createEmployees({
-  //     username: data.get("name"),
-  //     salary: data.get("salary"),
-  //     // department: data.get("department"),
-  //     length: newLength,
-  //   });
-  //   navigation("/");
-  // };
-
-  // const handleChange = (event: any) => {
-  //   console.log("change event", event.target.name, event.target.value);
-  //   setUser({ ...user, [event?.target.name]: event?.target.value });
-  // };
 
   const handleChange = (e: any) => {
     const name = e.target.name;
@@ -71,14 +41,24 @@ export default function NewEmployee() {
   };
 
   const onSubmitClick = () => {
-    // createEmployees({ username: input, length: newLength });
-    if (user.username.length > 1) {
-      createEmployees({
-        username: user.username,
-        salary: user.salary,
-        department: user.department,
-        length: newLength + 1,
-      });
+    if (user.username.length > 1 && newLength) {
+      // createEmployees({
+      //   username: user.username,
+      //   salary: user.salary,
+      //   department: user.department,
+      //   length: newLength + 1,
+      // });
+      axios
+        .post("http://localhost:3000/employees", {
+          name: user.username,
+          salary: user.salary,
+          department: user.department,
+          id: newLength + 1,
+        })
+        .then((response) => {
+          console.log(response);
+        });
+
       navigation("/");
     }
   };
@@ -99,12 +79,7 @@ export default function NewEmployee() {
           <Typography component="h1" variant="h5">
             Employee details
           </Typography>
-          <Box
-            component="form"
-            noValidate
-            sx={{ mt: 3 }}
-            // onSubmit={handleSubmit}
-          >
+          <Box component="form" noValidate sx={{ mt: 3 }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField
@@ -138,15 +113,6 @@ export default function NewEmployee() {
                 </FormControl>
               </Grid>
               <Grid item xs={12}>
-                {/* <TextField
-                  required
-                  fullWidth
-                  id="salary"
-                  label="Salary"
-                  name="salary"
-                  autoComplete="salary"
-                  onChange={handleChange}
-                /> */}
                 <FormControl fullWidth sx={{ m: 1 }}>
                   <InputLabel>Amount</InputLabel>
                   <OutlinedInput
@@ -176,8 +142,6 @@ export default function NewEmployee() {
           </Box>
         </Box>
       </Container>
-      {/* <input onChange={onInputChange} value={input} />
-      <button onClick={onSubmitClick}>Submit</button> */}
     </ThemeProvider>
   );
 }

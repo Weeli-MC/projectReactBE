@@ -12,8 +12,8 @@ export const jsonServerApi = createApi({
     baseUrl: "http://localhost:3000/",
   }),
   endpoints: (builder) => ({
-    getEmployees: builder.query<any, void>({
-      query: () => `/employees`,
+    getEmployees: builder.query<Employee[], void>({
+      query: (page: any = 1) => `/employees?_page=${page}&_limit=10`,
       providesTags: ["Employees"],
     }),
 
@@ -30,8 +30,33 @@ export const jsonServerApi = createApi({
       }),
       invalidatesTags: ["Employees"],
     }),
+
+    deleteEmployees: builder.mutation({
+      query: (id) => ({
+        url: `/employees/${id}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Employees"],
+    }),
+
+    updateEmployees: builder.mutation({
+      query: ({ id, body }) => ({
+        url: `/employees/${id}`,
+        method: "PUT",
+        body: {
+          name: body.username,
+          salary: body.salary,
+          department: body.department,
+          id: body.length,
+        },
+      }),
+      invalidatesTags: ["Employees"],
+    }),
   }),
 });
 
-export const { useGetEmployeesQuery, useCreateEmployeesMutation } =
-  jsonServerApi;
+export const {
+  useGetEmployeesQuery,
+  useCreateEmployeesMutation,
+  useDeleteEmployeesMutation,
+} = jsonServerApi;
