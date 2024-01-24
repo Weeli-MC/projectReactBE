@@ -1,3 +1,5 @@
+//IGNORE THIS PAGE FOR NOW. RTK QUERY IMPLEMENTATION
+
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 interface Employee {
@@ -9,11 +11,11 @@ export const jsonServerApi = createApi({
   reducerPath: "jsonServerApi",
   tagTypes: ["Employees"],
   baseQuery: fetchBaseQuery({
-    baseUrl: "http://localhost:3000/",
+    baseUrl: "http://localhost:8080/",
   }),
   endpoints: (builder) => ({
     getEmployees: builder.query<Employee[], void>({
-      query: (page: any = 1) => `/employees?_page=${page}&_limit=10`,
+      query: () => `/employees`,
       providesTags: ["Employees"],
     }),
 

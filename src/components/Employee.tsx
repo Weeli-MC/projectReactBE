@@ -1,25 +1,18 @@
-import {
-  useGetEmployeesQuery,
-  useDeleteEmployeesMutation,
-} from "../services/api";
 import { useEffect, useState } from "react";
-import AppBar from "@mui/material/AppBar";
-import Button from "@mui/material/Button";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
 import CardMedia from "@mui/material/CardMedia";
-import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
-import Stack from "@mui/material/Stack";
-import Box from "@mui/material/Box";
-import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import Link from "@mui/material/Link";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import DeleteIcon from "@mui/icons-material/Delete";
+import EditIcon from "@mui/icons-material/Edit";
+import DeleteModal from "./DeleteModal";
+import { PropsOf } from "@emotion/react";
 
 export interface Employee {
   id: number;
@@ -30,75 +23,109 @@ export interface Employee {
 const defaultTheme = createTheme();
 
 export default function Employees(props: any) {
-  const [allEmployees, setAllEmployees] = useState([]);
+  const navigation = useNavigate();
+
+  // const deleteEmployee = async (params: number) => {
+  //   try {
+  //     const response = await axios.delete(
+  //       `http://localhost:8080/employees/${params}`
+  //     );
+  //     console.log(response.data);
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
+
+  const [startIndex, setStartIndex] = useState(0);
+  const [endIndex, setEndIndex] = useState(0);
 
   useEffect(() => {
-    async function fetchMyAPI() {
-      let response = await fetch("http://localhost:3000/employees");
-      console.log(response);
-      const json = await response.json();
-      console.log(json);
-      setAllEmployees(json);
+    async function setIndex() {
+      if (props.currentPage === 1) {
+        setStartIndex(0);
+        setEndIndex(10);
+      } else {
+        setStartIndex(props.currentPage * 10 - 10);
+        setEndIndex(props.currentPage * 10 + 10);
+      }
     }
 
-    fetchMyAPI();
-  }, []);
+    setIndex();
+  }, [props.currentPage]);
 
-  // const [deleteEmployee] = useDeleteEmployeesMutation();
-  const deleteEmployee = async (params: number) => {
-    // console.log(params);
-    // await axios.delete("http://localhost:3000/employees", {
-    //   params: { id: params },
-    // });
-    try {
-      const response = await axios.delete(
-        `http://localhost:3000/employees/${params}`
-      );
-      console.log(response.data);
-    } catch (error) {
-      console.error(error);
-    }
+  const editEmployee = async (params: number) => {
+    navigation("AddEmployee", {
+      state: {
+        id: params,
+      },
+    });
+  };
+
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => {
+    setOpen(true);
   };
 
   return (
     <ul>
-      <Container sx={{ py: 8 }} maxWidth="md">
-        <Grid container spacing={4}>
-          {allEmployees?.map((element: Employee) => (
-            <Grid item key={element.id} xs={12} sm={6} md={4}>
+      <Grid container spacing={3}>
+        {props.allEmployees
+          ?.slice(startIndex, endIndex)
+          .map((element: Employee) => (
+            <Grid item key={element.id} xs={5}>
               <Card
                 sx={{
                   height: "100%",
                   display: "flex",
-                  flexDirection: "column",
+                  marginLeft: "5%",
+                  marginTop: "5%",
+
+                  backgroundcolor: "yellow",
                 }}
+                style={{ backgroundColor: "#eaeaea" }}
               >
-                <CardMedia
-                  component="div"
-                  sx={{
-                    pt: "56.25%",
-                  }}
-                  image="https://source.unsplash.com/random?wallpapers"
-                />
                 <CardContent sx={{ flexGrow: 1 }}>
                   <Typography gutterBottom variant="h5" component="h2">
                     {element.name}
                   </Typography>
-                  <Typography>{element.name}</Typography>
+                  <Typography>{element.department}</Typography>
+                  <Typography>
+                    {element.salary.toLocaleString("en-US", {
+                      style: "currency",
+                      currency: "USD",
+                      maximumFractionDigits: 0,
+                    })}
+                  </Typography>
                 </CardContent>
                 <CardActions>
-                  <button onClick={() => deleteEmployee(element.id)}>
-                    Edit
-                  </button>
-                  <button onClick={() => deleteEmployee(element.id)}>
-                    Delete
-                  </button>
+                  {/* <button onClick={() => editEmployee(element.id)}>Edit</button> */}
+                  {open ? (
+                    <DeleteModal
+                      handleOpen={handleOpen}
+                      open={open}
+                      setOpen={setOpen}
+                      empId={element.id}
+                    />
+                  ) : null}
+                  <EditIcon
+                    onClick={() => editEmployee(element.id)}
+                    style={{ color: "#facc59" }}
+                  />
+                  <DeleteIcon
+                    onClick={() =>
+                      // deleteEmployee(element.id)
+                      handleOpen()
+                    }
+                    style={{ color: "red" }}
+                  />
+                  {/* <button onClick={() => deleteEmployee(element.id)}>
+                  Delete
+                </button> */}
                 </CardActions>
               </Card>
             </Grid>
           ))}
-        </Grid>
-      </Container>
+      </Grid>
     </ul>
   );
 }

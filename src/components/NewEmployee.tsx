@@ -8,7 +8,6 @@ import Box from "@mui/material/Box";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
-import { useCreateEmployeesMutation } from "../services/api";
 import { useState } from "react";
 import { useGetEmployeesQuery } from "../services/api";
 import { useNavigate } from "react-router-dom";
@@ -22,16 +21,16 @@ import {
   Select,
 } from "@mui/material";
 import axios from "axios";
+import { useLocation } from "react-router-dom";
 
 const defaultTheme = createTheme();
 
 export default function NewEmployee() {
-  const [createEmployees] = useCreateEmployeesMutation();
-  const newLength = useGetEmployeesQuery().data?.length;
-  console.log(newLength, useGetEmployeesQuery());
+  const employee = useGetEmployeesQuery();
+  const newLength = employee?.data?.length;
   const [user, setUser] = useState({ username: "", salary: 0, department: "" });
-
   const navigation = useNavigate();
+  const location = useLocation().state;
 
   const handleChange = (e: any) => {
     const name = e.target.name;
@@ -40,27 +39,49 @@ export default function NewEmployee() {
     setUser({ ...user, [name]: value });
   };
 
-  const onSubmitClick = () => {
-    if (user.username.length > 1 && newLength) {
-      // createEmployees({
-      //   username: user.username,
-      //   salary: user.salary,
-      //   department: user.department,
-      //   length: newLength + 1,
-      // });
-      axios
-        .post("http://localhost:3000/employees", {
-          name: user.username,
-          salary: user.salary,
-          department: user.department,
-          id: newLength + 1,
-        })
-        .then((response) => {
-          console.log(response);
-        });
+  console.log(useLocation().state);
+  const onSubmitClick = async () => {
+    if (newLength !== undefined) {
+      if (user.username.length > 1 && newLength > 1) {
+        //if the edited is clicked, there is an id
+        // if there is no id, post, else put:
 
-      navigation("/");
+        if (!location.id) {
+          await axios
+            .post("http://localhost:8080/employees", {
+              name: user.username,
+              salary: +user.salary,
+              department: user.department,
+              id: newLength + 1,
+            })
+            .then((response) => {
+              console.log(response);
+            });
+        } else {
+          console.log("not here");
+          await axios.post(`http://localhost:8080/employees/${location.id}`, {
+            name: user.username,
+            salary: +user.salary,
+            department: user.department,
+            id: location.id,
+          });
+        }
+      }
+      //if first POST
+      else {
+        axios
+          .post("http://localhost:8080/employees", {
+            name: user.username,
+            salary: +user.salary,
+            department: user.department,
+            id: 1,
+          })
+          .then((response) => {
+            console.log(response);
+          });
+      }
     }
+    navigation("/");
   };
 
   return (
@@ -107,8 +128,8 @@ export default function NewEmployee() {
                   >
                     <MenuItem value={"HR"}>HR</MenuItem>
                     <MenuItem value={"IT"}>IT</MenuItem>
-                    <MenuItem value={"FC"}>Finance</MenuItem>
-                    <MenuItem value={"AD"}>Admin</MenuItem>
+                    <MenuItem value={"AC"}>Accounting</MenuItem>
+                    <MenuItem value={"PS"}>PS</MenuItem>
                   </Select>
                 </FormControl>
               </Grid>

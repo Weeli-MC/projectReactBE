@@ -1,13 +1,7 @@
 import * as React from "react";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import AppBar from "@mui/material/AppBar";
-// import Box from '@mui/material/Box';
 import Button from "@mui/material/Button";
-// import Card from '@mui/material/Card';
-// import CardActions from '@mui/material/CardActions';
-// import CardContent from '@mui/material/CardContent';
-// import CardHeader from '@mui/material/CardHeader';
-// import CardMedia from '@mui/material/CardMedia';
 import CssBaseline from "@mui/material/CssBaseline";
 import Grid from "@mui/material/Grid";
 import Toolbar from "@mui/material/Toolbar";
@@ -15,30 +9,45 @@ import Typography from "@mui/material/Typography";
 import Link from "@mui/material/Link";
 import GlobalStyles from "@mui/material/GlobalStyles";
 import Container from "@mui/material/Container";
-import NewEmployee from "./components/NewEmployee";
 import { useNavigate } from "react-router-dom";
 import Employees from "./components/Employee";
-import { useGetEmployeesQuery } from "./services/api";
-import { useState } from "react";
-
-const cards = [1, 2, 3, 4, 5, 6, 7, 8, 9];
-
-const footers = [
-  {
-    title: "Company",
-    description: ["Team", "History", "Contact us", "Locations"],
-  },
-
-  {
-    title: "Legal",
-    description: ["Privacy policy", "Terms of use"],
-  },
-];
+import { useEffect, useState } from "react";
+import { Icon } from "@mui/material";
+import axios from "axios";
+import AddCircleIcon from "@mui/icons-material/AddCircle";
+import Pagination from "./components/Pagination";
+import {
+  useGetEmployeesQuery,
+  useCreateEmployeesMutation,
+} from "./services/api";
 
 const defaultTheme = createTheme();
 
 export default function App() {
   const navigation = useNavigate();
+  const [createEmployees, { isLoading }] = useCreateEmployeesMutation();
+
+  const [allEmployees, setAllEmployees] = useState();
+  const [length, setLength] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [postsPerPage, setPostsPerPage] = useState(10);
+
+  useEffect(() => {
+    async function fetchMyAPI() {
+      let response = await fetch("http://localhost:8080/employees", {
+        method: "GET",
+        headers: {
+          accept: "application/json",
+        },
+      });
+      console.log(response);
+      const json = await response.json();
+      setLength(json.length);
+      setAllEmployees(json);
+    }
+
+    fetchMyAPI();
+  }, []);
 
   const navigateToAddEmployee = () => {
     navigation("AddEmployee");
@@ -64,20 +73,18 @@ export default function App() {
           {/* <NewEmployee/> */}
           <Button
             href="#"
-            variant="outlined"
             sx={{ my: 1, mx: 1.5 }}
+            style={{ background: " #34933b", color: "white" }}
             onClick={navigateToAddEmployee}
           >
-            Add Employee
+            <AddCircleIcon /> Add Employee
           </Button>
         </Toolbar>
       </AppBar>
-      <Container sx={{ py: 8 }} maxWidth="md">
+      <Grid>
         {/* End hero unit */}
-        <Grid container spacing={4}>
-          <Employees />
-        </Grid>
-      </Container>
+        <Employees allEmployees={allEmployees} currentPage={currentPage} />
+      </Grid>
       <Container
         maxWidth="md"
         component="footer"
@@ -87,24 +94,14 @@ export default function App() {
           py: [3, 6],
         }}
       >
-        <Grid container spacing={4} justifyContent="space-evenly">
-          {footers.map((footer) => (
-            <Grid item xs={6} sm={3} key={footer.title}>
-              <Typography variant="h6" color="text.primary" gutterBottom>
-                {footer.title}
-              </Typography>
-              <ul>
-                {footer.description.map((item) => (
-                  <li key={item}>
-                    <Link href="#" variant="subtitle1" color="text.secondary">
-                      {item}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </Grid>
-          ))}
-        </Grid>
+        {/* <Grid container spacing={4} justifyContent="space-evenly">
+          {length > 0 ? <p>Showing out of {length} entries</p> : null}
+        </Grid> */}
+        <Pagination
+          length={length}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+        />
       </Container>
       {/* End footer */}
     </ThemeProvider>
