@@ -7,6 +7,7 @@ import { Provider } from "react-redux";
 import { store } from "./app/store";
 import NewEmployee from "./components/NewEmployee";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+
 import express from "express";
 import { Sequelize } from "sequelize-typescript";
 

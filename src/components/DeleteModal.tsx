@@ -3,6 +3,7 @@ import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
 import axios from "axios";
+import { useDeleteEmployeesMutation } from "../services/api";
 
 const style = {
   position: "absolute" as "absolute",
@@ -19,16 +20,18 @@ const style = {
 };
 
 export default function DeleteModal(props: any) {
+  const [deleteEmployee, { isLoading }] = useDeleteEmployeesMutation();
   const handleClose = async () => {
     props.setOpen(false);
     try {
-      const response = await axios.delete(
-        `http://localhost:8080/employees/${props.empId}`
-      );
-      console.log(response.data);
+      deleteEmployee(props.empId);
     } catch (error) {
       console.error(error);
     }
+  };
+
+  const handleCancel = async () => {
+    props.setOpen(false);
   };
 
   return (
@@ -38,6 +41,7 @@ export default function DeleteModal(props: any) {
           <h2>Warning!</h2>
           <p>Do you want to delete this employee from your database?</p>
           <Button onClick={handleClose}>Confirm</Button>
+          <Button onClick={handleCancel}>Cancel</Button>
         </Box>
       </Modal>
     </React.Fragment>

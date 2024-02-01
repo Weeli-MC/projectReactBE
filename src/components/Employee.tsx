@@ -12,7 +12,6 @@ import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteModal from "./DeleteModal";
-import { PropsOf } from "@emotion/react";
 
 export interface Employee {
   id: number;
@@ -24,18 +23,6 @@ const defaultTheme = createTheme();
 
 export default function Employees(props: any) {
   const navigation = useNavigate();
-
-  // const deleteEmployee = async (params: number) => {
-  //   try {
-  //     const response = await axios.delete(
-  //       `http://localhost:8080/employees/${params}`
-  //     );
-  //     console.log(response.data);
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // };
-
   const [startIndex, setStartIndex] = useState(0);
   const [endIndex, setEndIndex] = useState(0);
 
@@ -54,7 +41,7 @@ export default function Employees(props: any) {
   }, [props.currentPage]);
 
   const editEmployee = async (params: number) => {
-    navigation("AddEmployee", {
+    navigation("./AddEmployee", {
       state: {
         id: params,
       },
@@ -72,14 +59,13 @@ export default function Employees(props: any) {
         {props.allEmployees
           ?.slice(startIndex, endIndex)
           .map((element: Employee) => (
-            <Grid item key={element.id} xs={5}>
+            <Grid item key={element.id} xs={12} sm={6}>
               <Card
                 sx={{
                   height: "100%",
                   display: "flex",
                   marginLeft: "5%",
                   marginTop: "5%",
-
                   backgroundcolor: "yellow",
                 }}
                 style={{ backgroundColor: "#eaeaea" }}
@@ -98,7 +84,6 @@ export default function Employees(props: any) {
                   </Typography>
                 </CardContent>
                 <CardActions>
-                  {/* <button onClick={() => editEmployee(element.id)}>Edit</button> */}
                   {open ? (
                     <DeleteModal
                       handleOpen={handleOpen}
@@ -112,15 +97,9 @@ export default function Employees(props: any) {
                     style={{ color: "#facc59" }}
                   />
                   <DeleteIcon
-                    onClick={() =>
-                      // deleteEmployee(element.id)
-                      handleOpen()
-                    }
+                    onClick={() => handleOpen()}
                     style={{ color: "red" }}
                   />
-                  {/* <button onClick={() => deleteEmployee(element.id)}>
-                  Delete
-                </button> */}
                 </CardActions>
               </Card>
             </Grid>

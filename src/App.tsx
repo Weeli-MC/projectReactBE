@@ -20,6 +20,7 @@ import {
   useGetEmployeesQuery,
   useCreateEmployeesMutation,
 } from "./services/api";
+import Box from "@mui/material/Box";
 
 const defaultTheme = createTheme();
 
@@ -27,81 +28,115 @@ export default function App() {
   const navigation = useNavigate();
   const [createEmployees, { isLoading }] = useCreateEmployeesMutation();
 
-  const [allEmployees, setAllEmployees] = useState();
+  const { data, status, error, refetch, isSuccess } = useGetEmployeesQuery();
+  const [allEmployees, setAllEmployees] = useState(data);
   const [length, setLength] = useState(0);
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage, setPostsPerPage] = useState(10);
 
+  const navigateToAddEmployee = () => {
+    navigation("/AddEmployee");
+  };
+
   useEffect(() => {
-    async function fetchMyAPI() {
-      let response = await fetch("http://localhost:8080/employees", {
-        method: "GET",
-        headers: {
-          accept: "application/json",
-        },
-      });
-      console.log(response);
-      const json = await response.json();
-      setLength(json.length);
-      setAllEmployees(json);
+    async function setOthers() {
+      if (isSuccess) {
+        setAllEmployees(data);
+        setLength(data!.length);
+      } else {
+        setAllEmployees(data);
+      }
     }
 
-    fetchMyAPI();
-  }, []);
+    setOthers();
+  }, [data]);
 
-  const navigateToAddEmployee = () => {
-    navigation("AddEmployee");
-  };
+  const [startIndex, setStartIndex] = useState(0);
+  const [endIndex, setEndIndex] = useState(0);
+
+  useEffect(() => {
+    async function setIndex() {
+      if (currentPage === 1) {
+        setStartIndex(0);
+        setEndIndex(10);
+      } else {
+        setStartIndex(currentPage * 10 - 10);
+        //if the current page * 10 is less than the total number of entries:
+        //set the end as currentpage * 20
+        //else set it as the last item
+        if (currentPage * 10 < length && length) {
+          setEndIndex(currentPage * 10);
+        } else {
+          setEndIndex(length);
+        }
+      }
+    }
+
+    setIndex();
+  }, [currentPage]);
 
   return (
     <ThemeProvider theme={defaultTheme}>
       <GlobalStyles
-        styles={{ ul: { margin: 0, padding: 0, listStyle: "none" } }}
+        styles={{ ul: { margin: "50px", padding: 0, listStyle: "none" } }}
       />
       <CssBaseline />
       <AppBar
         position="static"
-        // color="default"
         elevation={0}
         sx={{ borderBottom: (theme) => `1px solid ${theme.palette.divider}` }}
         style={{ background: "#365271" }}
       >
         <Toolbar sx={{ flexWrap: "wrap" }}>
-          <Typography variant="h6" color="inherit" noWrap sx={{ flexGrow: 1 }}>
+          <Typography variant="h3" color="inherit" noWrap sx={{ flexGrow: 1 }}>
             Employees
           </Typography>
-          {/* <NewEmployee/> */}
           <Button
-            href="#"
             sx={{ my: 1, mx: 1.5 }}
             style={{ background: " #34933b", color: "white" }}
-            onClick={navigateToAddEmployee}
+            // onClick={navigateToAddEmployee}
+            onClick={() => navigateToAddEmployee()}
           >
-            <AddCircleIcon /> Add Employee
+            <AddCircleIcon />
+            <Typography sx={{ padding: "5px" }}>Add Employee</Typography>
           </Button>
         </Toolbar>
       </AppBar>
-      <Grid>
+      <Grid item xs={12} sm={6}>
         {/* End hero unit */}
         <Employees allEmployees={allEmployees} currentPage={currentPage} />
       </Grid>
-      <Container
-        maxWidth="md"
-        component="footer"
-        sx={{
-          borderTop: (theme) => `1px solid ${theme.palette.divider}`,
-          mt: 8,
-          py: [3, 6],
-        }}
-      >
-        {/* <Grid container spacing={4} justifyContent="space-evenly">
-          {length > 0 ? <p>Showing out of {length} entries</p> : null}
-        </Grid> */}
-        <Pagination
-          length={length}
-          currentPage={currentPage}
-          setCurrentPage={setCurrentPage}
-        />
+      <Container maxWidth="md" component="footer">
+        <Grid container>
+          <Grid item={true} xs={12} sm={9}>
+            {/* <Typography gutterBottom variant="h6" left="10%">
+              Showing {startIndex + 1}-{endIndex} out of {length} entries
+            </Typography>{" "} */}
+            <Typography
+              gutterBottom
+              variant="h6"
+              left="10%"
+              sx={{ color: "#365271" }}
+            >
+              Showing{" "}
+              <Box component="span" fontWeight="bold">
+                {startIndex + 1}-{endIndex}
+              </Box>{" "}
+              out of{" "}
+              <Box component="span" fontWeight="bold">
+                {length}{" "}
+              </Box>
+              entries
+            </Typography>
+          </Grid>
+          <Grid item={true}>
+            <Pagination
+              length={length}
+              currentPage={currentPage}
+              setCurrentPage={setCurrentPage}
+            />
+          </Grid>
+        </Grid>
       </Container>
       {/* End footer */}
     </ThemeProvider>

@@ -42,14 +42,13 @@ export const jsonServerApi = createApi({
     }),
 
     updateEmployees: builder.mutation({
-      query: ({ id, body }) => ({
+      query: ({ id, username, salary, department }) => ({
         url: `/employees/${id}`,
         method: "PUT",
         body: {
-          name: body.username,
-          salary: body.salary,
-          department: body.department,
-          id: body.length,
+          name: username,
+          salary: parseInt(salary),
+          department: department,
         },
       }),
       invalidatesTags: ["Employees"],
@@ -61,4 +60,5 @@ export const {
   useGetEmployeesQuery,
   useCreateEmployeesMutation,
   useDeleteEmployeesMutation,
+  useUpdateEmployeesMutation,
 } = jsonServerApi;
