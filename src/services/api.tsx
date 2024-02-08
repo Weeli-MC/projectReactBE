@@ -1,5 +1,3 @@
-//IGNORE THIS PAGE FOR NOW. RTK QUERY IMPLEMENTATION
-
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 interface Employee {
@@ -47,7 +45,7 @@ export const jsonServerApi = createApi({
         method: "PUT",
         body: {
           name: username,
-          salary: parseInt(salary),
+          salary: salary,
           department: department,
         },
       }),

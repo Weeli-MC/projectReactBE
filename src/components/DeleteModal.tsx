@@ -2,7 +2,6 @@ import * as React from "react";
 import Box from "@mui/material/Box";
 import Modal from "@mui/material/Modal";
 import Button from "@mui/material/Button";
-import axios from "axios";
 import { useDeleteEmployeesMutation } from "../services/api";
 
 const style = {

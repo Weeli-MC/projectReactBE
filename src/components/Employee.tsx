@@ -2,13 +2,10 @@ import { useEffect, useState } from "react";
 import Card from "@mui/material/Card";
 import CardActions from "@mui/material/CardActions";
 import CardContent from "@mui/material/CardContent";
-import CardMedia from "@mui/material/CardMedia";
 import Grid from "@mui/material/Grid";
 import Typography from "@mui/material/Typography";
-import Container from "@mui/material/Container";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteModal from "./DeleteModal";
@@ -41,7 +38,7 @@ export default function Employees(props: any) {
   }, [props.currentPage]);
 
   const editEmployee = async (params: number) => {
-    navigation("./AddEmployee", {
+    navigation("/AddEmployee", {
       state: {
         id: params,
       },
@@ -62,11 +59,11 @@ export default function Employees(props: any) {
             <Grid item key={element.id} xs={12} sm={6}>
               <Card
                 sx={{
-                  height: "100%",
+                  // height: "100%",
                   display: "flex",
-                  marginLeft: "5%",
-                  marginTop: "5%",
-                  backgroundcolor: "yellow",
+                  // marginLeft: "5%",
+                  // marginTop: "5%",
+                  // backgroundcolor: "yellow",
                 }}
                 style={{ backgroundColor: "#eaeaea" }}
               >

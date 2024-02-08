@@ -1,6 +1,5 @@
 import * as React from "react";
 import Avatar from "@mui/material/Avatar";
-import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
@@ -20,7 +19,6 @@ import {
   OutlinedInput,
   Select,
 } from "@mui/material";
-import axios from "axios";
 import {
   useCreateEmployeesMutation,
   useUpdateEmployeesMutation,
@@ -28,25 +26,24 @@ import {
 
 const defaultTheme = createTheme();
 
+//useparams
+
 export default function NewEmployee() {
   const { data } = useGetEmployeesQuery();
   const [allEmployees, setAllEmployees] = useState(data);
 
   const [createEmployees, { isLoading }] = useCreateEmployeesMutation();
   const [updateEmployee] = useUpdateEmployeesMutation();
-  const location = useLocation().state;
+  const [location, setLocation] = useState(useLocation().state);
+
+  // const location = useLocation().state;
   const [user, setUser] = useState({
     username: "",
     salary: 0,
     department: `HR`,
   });
   const navigation = useNavigate();
-  const [locationState, setLocationState] = useState(null);
   const [newLength, setNewLength] = useState(allEmployees?.length);
-
-  useEffect(() => {
-    setLocationState(location);
-  }, []);
 
   const handleChange = (e: any) => {
     const name = e.target.name;
@@ -55,6 +52,7 @@ export default function NewEmployee() {
     setUser({ ...user, [name]: value });
   };
 
+  console.log(allEmployees);
   //check if there's no id
   //if yes:
   //- check if it's first time:
@@ -66,7 +64,7 @@ export default function NewEmployee() {
       if (newLength > 1) {
         //if the edited is clicked, there is an id
         // if there is no id, post, else put:
-        if (locationState === null) {
+        if (!location) {
           createEmployees({
             username: user.username,
             salary: user.salary,
@@ -79,8 +77,8 @@ export default function NewEmployee() {
         } else {
           // use ['name'] instead of . to prevent never error
           // id: locationState["id"],
-          await updateEmployee({
-            id: locationState["id"],
+          updateEmployee({
+            id: location.id,
             username: user.username,
             salary: user.salary,
             department: user.department,
@@ -90,7 +88,7 @@ export default function NewEmployee() {
       }
       //if first POST
       else {
-        await createEmployees({
+        createEmployees({
           username: user.username,
           salary: user.salary,
           department: user.department,
@@ -100,7 +98,8 @@ export default function NewEmployee() {
         });
         navigation("/");
       }
-    } else navigation("/");
+    }
+    navigation("/");
   };
 
   return (
